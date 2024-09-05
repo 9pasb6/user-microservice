@@ -1,6 +1,5 @@
 package emazon.microservice.user_microservice.domain.spi;
 
-import emazon.microservice.user_microservice.domain.model.Role;
 import emazon.microservice.user_microservice.domain.model.User;
 
 import java.util.List;
@@ -19,5 +18,5 @@ public interface IUserPersistencePort {
 
     void removeRoleFromUser(Long id, String role);
 
-
+    User findByIdentityDocument(String identityDocument);
 }

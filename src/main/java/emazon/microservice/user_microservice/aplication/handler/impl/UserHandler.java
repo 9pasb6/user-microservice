@@ -7,10 +7,15 @@ import emazon.microservice.user_microservice.aplication.mapper.request.UserReque
 import emazon.microservice.user_microservice.aplication.mapper.response.UserResponseMapper;
 import emazon.microservice.user_microservice.domain.api.IUserServicePort;
 import emazon.microservice.user_microservice.domain.model.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,22 +27,25 @@ public class UserHandler implements IUserHandler {
     private final IUserServicePort userServicePort;
     private final UserRequestMapper userRequestMapper;
     private final UserResponseMapper userResponseMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public void createUser(UserRequest userRequest) {
+    public void createUser(@Valid UserRequest userRequest) {
 
-        System.out.println("userRequest handler= " + userRequest);
-        // Convertir el UserRequest a User utilizando el mapper
+        LocalDate birthDate = convertAndValidateBirthDate(userRequest.getBirthDate());
+
+        userRequest.setBirthDate(birthDate.toString());
+
+        String encryptedPassword = passwordEncoder.encode(userRequest.getPassword());
+        userRequest.setPassword(encryptedPassword);
+
         User user = userRequestMapper.requestToUser(userRequest);
-        // Llamar al servicio para crear el usuario
         userServicePort.createUser(user);
     }
 
     @Override
     public List<UserResponse> getAllUsers() {
-        // Obtener todos los usuarios del servicio
         List<User> users = userServicePort.getAllUsers();
-        // Convertir la lista de usuarios a UserResponse utilizando el mapper
         return users.stream()
                 .map(userResponseMapper::userToUserResponse)
                 .collect(Collectors.toList());
@@ -45,17 +53,13 @@ public class UserHandler implements IUserHandler {
 
     @Override
     public UserResponse getUserById(Long id) {
-        // Obtener el usuario por ID del servicio
         User user = userServicePort.getUserById(id);
-        // Convertir el usuario a UserResponse utilizando el mapper
         return userResponseMapper.userToUserResponse(user);
     }
 
     @Override
     public List<UserResponse> getUsersByRole(String role) {
-        // Obtener la lista de usuarios por rol del servicio
         List<User> users = userServicePort.getUsersByRole(role);
-        // Convertir la lista de usuarios a UserResponse utilizando el mapper
         return users.stream()
                 .map(userResponseMapper::userToUserResponse)
                 .collect(Collectors.toList());
@@ -63,13 +67,20 @@ public class UserHandler implements IUserHandler {
 
     @Override
     public void assignRoleToUser(Long id, String role) {
-        // Llamar al servicio para asignar un rol al usuario
         userServicePort.assignRoleToUser(id, role);
     }
 
     @Override
     public void removeRoleFromUser(Long id, String role) {
-        // Llamar al servicio para quitar un rol del usuario
         userServicePort.removeRoleFromUser(id, role);
+    }
+
+    private LocalDate convertAndValidateBirthDate(String birthDateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            return LocalDate.parse(birthDateString, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("The birth date format should be yyyy-MM-dd.");
+        }
     }
 }

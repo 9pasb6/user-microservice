@@ -1,8 +1,9 @@
-package emazon.microservice.user_microservice.infrastructure.controllers;
+package emazon.microservice.user_microservice.infrastructure.input.rest.controllers;
 
 import emazon.microservice.user_microservice.aplication.dto.request.UserRequest;
 import emazon.microservice.user_microservice.aplication.dto.response.UserResponse;
 import emazon.microservice.user_microservice.aplication.handler.IUserHandler;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody UserRequest userRequest) {
         System.out.println("userRequest controller = " + userRequest);
         userHandler.createUser(userRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);

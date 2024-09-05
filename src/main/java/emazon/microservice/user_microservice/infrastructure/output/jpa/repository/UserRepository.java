@@ -1,7 +1,6 @@
-package emazon.microservice.user_microservice.infrastructure.jpa.repository;
+package emazon.microservice.user_microservice.infrastructure.output.jpa.repository;
 
-import emazon.microservice.user_microservice.infrastructure.jpa.entity.RoleEntity;
-import emazon.microservice.user_microservice.infrastructure.jpa.entity.UserEntity;
+import emazon.microservice.user_microservice.infrastructure.output.jpa.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,5 +16,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT u FROM UserEntity u JOIN FETCH u.roles WHERE u.id = :id")
     Optional<UserEntity> findByIdWithRoles(Long id);
 
+    Optional<UserEntity> findByIdentityDocument(String identityDocument);
 
 }

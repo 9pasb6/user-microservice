@@ -1,6 +1,8 @@
 package emazon.microservice.user_microservice.domain.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class Role {
@@ -8,10 +10,15 @@ public class Role {
     private String name;
     private List<User> users;
 
+
     public Role(Long id, String name, List<User> users) {
         this.id = id;
         this.name = name;
-        this.users = users;
+        this.users = users != null ? users : new ArrayList<>();
+    }
+
+    public Role() {
+
     }
 
     public Long getId() {
@@ -45,5 +52,18 @@ public class Role {
                 ", name='" + name + '\'' +
                 ", users=" + users +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id) && Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

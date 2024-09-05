@@ -4,6 +4,7 @@ import emazon.microservice.user_microservice.domain.model.User;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
 public class ValidationUtil {
@@ -14,29 +15,34 @@ public class ValidationUtil {
 
     public static void validateUser(User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
-            throw new IllegalArgumentException("The user name cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.USER_NAME_EMPTY);
         }
         if (user.getLastName() == null || user.getLastName().isEmpty()) {
-            throw new IllegalArgumentException("The user last name cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.USER_LAST_NAME_EMPTY);
         }
         if (user.getIdentityDocument() == null || !ID_DOCUMENT_PATTERN.matcher(user.getIdentityDocument()).matches()) {
-            throw new IllegalArgumentException("The identity document must be numeric and cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.IDENTITY_DOCUMENT_INVALID);
         }
         if (user.getPhoneNumber() == null || !PHONE_PATTERN.matcher(user.getPhoneNumber()).matches()) {
-            throw new IllegalArgumentException("The phone number must be valid and cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.PHONE_NUMBER_INVALID);
         }
-        if (user.getBirthDate() == null || !isAdult(user.getBirthDate())) {
-            throw new IllegalArgumentException("The user must be an adult.");
+        if (user.getBirthDate() == null ) {
+            throw new IllegalArgumentException(Constants.BIRTH_DATE_INVALID_FORMAT);
+        }
+        if (!isAdult(user.getBirthDate())) {
+            throw new IllegalArgumentException(Constants.USER_NOT_ADULT);
         }
         if (user.getEmail() == null || !EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
-            throw new IllegalArgumentException("The email must be valid and cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.EMAIL_INVALID);
         }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("The password cannot be empty or null.");
+            throw new IllegalArgumentException(Constants.PASSWORD_EMPTY);
         }
     }
 
     private static boolean isAdult(LocalDate birthDate) {
         return Period.between(birthDate, LocalDate.now()).getYears() >= 18;
     }
+
+
 }

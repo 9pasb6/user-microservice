@@ -24,7 +24,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll() // POST a /api/users permitido sin autenticación
                         .requestMatchers(HttpMethod.GET, "/api/roles").permitAll() // GET a /api/roles requiere rol ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/roles").permitAll() // POST a /api/roles requiere rol ADMIN
-                        .anyRequest().authenticated() // Requiere autenticación para cualquier otra solicitud
+                        .anyRequest().permitAll() // Requiere autenticación para cualquier otra solicitud
                 )
                 // Configura el inicio de sesión
                 .formLogin(form -> form

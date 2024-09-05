@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -22,15 +24,22 @@ public interface UserRequestMapper {
     @Mapping(source = "lastName", target = "lastName")
     @Mapping(source = "identityDocument", target = "identityDocument")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
-    @Mapping(source = "birthDate", target = "birthDate")
+    @Mapping(source = "birthDate", target = "birthDate", qualifiedByName = "stringToLocalDate")
     @Mapping(source = "email", target = "email")
     @Mapping(source = "password", target = "password")
     @Mapping(source = "rolesId", target = "roles", qualifiedByName = "rolesIdToRoles")
     User requestToUser(UserRequest request);
 
+    @Named("stringToLocalDate")
+    default LocalDate stringToLocalDate(String birthDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(birthDate, formatter);
+    }
+
     @Named("rolesIdToRoles")
     default List<Role> mapRolesIdToRoles(List<Long> rolesId) {
         return rolesId.stream()
-                .map(id -> new Role(id, null,null)).toList();
+                .map(id -> new Role(id, null, null))
+                .toList();
     }
 }

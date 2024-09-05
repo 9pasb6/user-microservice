@@ -1,6 +1,6 @@
-package emazon.microservice.user_microservice.infrastructure.jpa.repository;
+package emazon.microservice.user_microservice.infrastructure.output.jpa.repository;
 
-import emazon.microservice.user_microservice.infrastructure.jpa.entity.RoleEntity;
+import emazon.microservice.user_microservice.infrastructure.output.jpa.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
