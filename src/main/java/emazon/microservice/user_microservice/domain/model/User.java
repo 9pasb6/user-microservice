@@ -1,6 +1,7 @@
 package emazon.microservice.user_microservice.domain.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -23,7 +24,12 @@ public class User {
         this.birthDate = birthDate;
         this.email = email;
         this.password = password;
-        this.roles = roles;
+        this.roles = roles != null ? roles : new ArrayList<>();
+
+    }
+
+    public User() {
+
     }
 
     public Long getId() {

@@ -1,10 +1,7 @@
-package emazon.microservice.user_microservice.infrastructure.jpa.entity;
+package emazon.microservice.user_microservice.infrastructure.output.jpa.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -12,19 +9,20 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@ToString
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String lastName; // Nuevo campo
-    private String identityDocument; // Nuevo campo
-    private String phoneNumber; // Nuevo campo
-    private LocalDate birthDate; // Nuevo campo
+    private String lastName;
+    private String identityDocument;
+    private String phoneNumber;
+    private LocalDate birthDate;
     private String email;
     private String password;
 
@@ -34,6 +32,4 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles = new HashSet<>();
-
-
 }
