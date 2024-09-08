@@ -1,11 +1,17 @@
 package emazon.microservice.user_microservice.infrastructure.configuration;
 
-import jakarta.servlet.http.HttpServletResponse;
+import emazon.microservice.user_microservice.infrastructure.configuration.auth.JwtAuthenticationFilter;
+import emazon.microservice.user_microservice.infrastructure.configuration.auth.JwtValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -13,29 +19,28 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         http
-                // Deshabilita CSRF para simplificar
                 .csrf(csrf -> csrf.disable())
-                // Configura las solicitudes HTTP
                 .authorizeHttpRequests(authz -> authz
-                        // Permite acceso sin autenticación para ciertas rutas y métodos
-                        .requestMatchers(HttpMethod.GET, "/api/users").permitAll() // GET a /api/users permitido sin autenticación
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll() // POST a /api/users permitido sin autenticación
-                        .requestMatchers(HttpMethod.GET, "/api/roles").permitAll() // GET a /api/roles requiere rol ADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/roles").permitAll() // POST a /api/roles requiere rol ADMIN
-                        .anyRequest().permitAll() // Requiere autenticación para cualquier otra solicitud
+                        .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .anyRequest().permitAll()
                 )
-                // Configura el inicio de sesión
-                .formLogin(form -> form
-                        .permitAll() // Permite el inicio de sesión para todos
-                )
-                // Configura el manejo de excepciones
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        })
-                );
+                .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                .addFilter(new JwtValidationFilter(authenticationManager))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean(name = "customPasswordEncoder")
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

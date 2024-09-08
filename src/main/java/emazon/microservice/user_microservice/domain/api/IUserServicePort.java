@@ -19,5 +19,8 @@ public interface IUserServicePort {
 
     void removeRoleFromUser(Long id, String role);
 
+    User login(String email);
+
+
 
 }
