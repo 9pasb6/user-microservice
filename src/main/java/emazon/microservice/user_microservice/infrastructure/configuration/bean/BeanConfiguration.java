@@ -1,4 +1,4 @@
-package emazon.microservice.user_microservice.infrastructure.configuration;
+package emazon.microservice.user_microservice.infrastructure.configuration.bean;
 
 import emazon.microservice.user_microservice.domain.api.IRoleServicePort;
 import emazon.microservice.user_microservice.domain.api.IUserServicePort;

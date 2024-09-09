@@ -1,6 +1,7 @@
 package emazon.microservice.user_microservice.domain.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ public class User {
     private String email;
     private String password;
     private List<Role> roles;
+
+
 
     public User(Long id, String name, String lastName, String identityDocument, String phoneNumber, LocalDate birthDate, String email, String password, List<Role> roles) {
         this.id = id;
@@ -103,6 +106,7 @@ public class User {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+
 
     @Override
     public String toString() {
