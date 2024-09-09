@@ -1,6 +1,4 @@
-Aquí tienes el README modificado para tu proyecto con la entidad `Usuario` y sus atributos, además de la explicación sobre JWT y el flujo de autenticación.
 
----
 
 # User Management Microservice
 
@@ -121,6 +119,4 @@ El microservicio incluye Swagger para la documentación de la API, permitiendo q
 4. **Acceder a la documentación Swagger**:
    - Visite `http://localhost:8080/swagger-ui.html` para explorar la documentación de la API.
 
----
 
-Este README proporciona una descripción clara de la arquitectura del proyecto, los componentes clave, y el flujo de autenticación mediante JWT.
