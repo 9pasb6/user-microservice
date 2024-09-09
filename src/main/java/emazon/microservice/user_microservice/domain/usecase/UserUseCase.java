@@ -10,6 +10,7 @@ import emazon.microservice.user_microservice.domain.spi.IUserPersistencePort;
 import emazon.microservice.user_microservice.domain.util.Constants;
 import emazon.microservice.user_microservice.domain.util.ValidationUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,10 +27,15 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public void createUser(User user) {
-
         if (userPersistencePort.findByIdentityDocument(user.getIdentityDocument()) != null) {
             throw new UserExceptions.UserAlreadyExistsException(Constants.IDENTITY_DOCUMENT_ALREADY_EXISTS);
         }
+
+
+        if (userPersistencePort.findByEmail(user.getEmail()) != null) {
+            throw new UserExceptions.UserAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
+        }
+
 
 
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
@@ -55,9 +61,9 @@ public class UserUseCase implements IUserServicePort {
         }
 
         ValidationUtil.validateUser(user);
-
         this.userPersistencePort.createUser(user);
     }
+
 
     @Override
     public List<User> getAllUsers() {
@@ -114,4 +120,16 @@ public class UserUseCase implements IUserServicePort {
         user.getRoles().remove(role);
         userPersistencePort.createUser(user);
     }
+
+    @Override
+    public User login(String email) {
+        User user = userPersistencePort.findByEmail(email);
+        if (user == null) {
+            throw new UserExceptions.UserNotFoundException(Constants.MAIL_NOT_FOUND + email);
+        }
+        return user;
+    }
+
+
+
 }

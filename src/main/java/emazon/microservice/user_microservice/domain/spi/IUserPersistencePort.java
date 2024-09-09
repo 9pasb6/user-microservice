@@ -19,4 +19,9 @@ public interface IUserPersistencePort {
     void removeRoleFromUser(Long id, String role);
 
     User findByIdentityDocument(String identityDocument);
+
+    User findByEmail(String email);
+
+
+
 }

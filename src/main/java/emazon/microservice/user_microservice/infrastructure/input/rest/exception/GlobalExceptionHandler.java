@@ -4,12 +4,14 @@ import emazon.microservice.user_microservice.domain.exception.RoleExceptions;
 import emazon.microservice.user_microservice.domain.exception.UserExceptions;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -53,6 +55,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleGeneralException(Exception ex) {
+        System.out.println("ex = " + ex);
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred.");
     }
 
@@ -79,6 +82,13 @@ public class GlobalExceptionHandler {
         });
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage.toString().trim());
     }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getStatusCode().value(), ex.getReason());
+        return new ResponseEntity<>(errorResponse, ex.getStatusCode());
+    }
+
 
     public static class ErrorResponse {
         private int status;

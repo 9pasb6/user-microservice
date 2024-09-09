@@ -1,6 +1,8 @@
 package emazon.microservice.user_microservice.infrastructure.input.rest.controllers;
 
+import emazon.microservice.user_microservice.aplication.dto.request.UserLoginRequest;
 import emazon.microservice.user_microservice.aplication.dto.request.UserRequest;
+import emazon.microservice.user_microservice.aplication.dto.response.UserLoginResponse;
 import emazon.microservice.user_microservice.aplication.dto.response.UserResponse;
 import emazon.microservice.user_microservice.aplication.handler.IUserHandler;
 import jakarta.validation.Valid;
@@ -21,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserRequest userRequest) {
-        System.out.println("userRequest controller = " + userRequest);
+
         userHandler.createUser(userRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -54,5 +56,11 @@ public class UserController {
     public ResponseEntity<Void> removeRoleFromUser(@PathVariable Long id, @PathVariable String role) {
         userHandler.removeRoleFromUser(id, role);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> loginUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
+        UserLoginResponse userLoginResponse = userHandler.login(userLoginRequest);
+        return ResponseEntity.ok(userLoginResponse);
     }
 }

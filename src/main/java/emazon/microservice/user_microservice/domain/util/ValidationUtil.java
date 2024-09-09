@@ -38,6 +38,9 @@ public class ValidationUtil {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new IllegalArgumentException(Constants.PASSWORD_EMPTY);
         }
+        if (user.getPassword().length() < 8) {
+            throw new IllegalArgumentException(Constants.PASSWORD_EMPTY);
+        }
     }
 
     private static boolean isAdult(LocalDate birthDate) {

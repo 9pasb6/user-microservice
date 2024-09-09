@@ -9,7 +9,9 @@ import emazon.microservice.user_microservice.infrastructure.output.jpa.repositor
 import emazon.microservice.user_microservice.infrastructure.output.jpa.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,4 +84,16 @@ public class UserJpaAdapter implements IUserPersistencePort {
                 .map(userEntityMapper::toDomain)
                 .orElse(null);
     }
+
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userEntityMapper::toDomain)
+                .orElse(null);
+    }
+
+
+
+
 }
