@@ -1,9 +1,8 @@
-package emazon.microservice.user_microservice.infrastructure.configuration.auth;
+package emazon.microservice.user_microservice.infrastructure.configuration.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import emazon.microservice.user_microservice.aplication.dto.request.UserLoginRequest;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import emazon.microservice.user_microservice.aplication.util.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,19 +14,20 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static emazon.microservice.user_microservice.aplication.security.TokenJwtConfig.*;
+import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -44,18 +44,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String username = authResult.getName();
-        String token = Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000)) // 1 hora
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)  // Usar la clave secreta global
-                .compact();
+        String token = jwtService.generateToken(username, authResult.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .collect(Collectors.toList()));
 
         Map<String, String> body = new HashMap<>();
         body.put("token", token);
         body.put("username", username);
-        response.setContentType(CONTENT_TYPE);
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     }
 }

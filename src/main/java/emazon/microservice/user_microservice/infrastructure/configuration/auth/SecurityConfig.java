@@ -1,7 +1,8 @@
-package emazon.microservice.user_microservice.infrastructure.configuration;
+package emazon.microservice.user_microservice.infrastructure.configuration.auth;
 
-import emazon.microservice.user_microservice.infrastructure.configuration.auth.JwtAuthenticationFilter;
-import emazon.microservice.user_microservice.infrastructure.configuration.auth.JwtValidationFilter;
+import emazon.microservice.user_microservice.aplication.util.security.JwtService;
+import emazon.microservice.user_microservice.infrastructure.configuration.auth.filter.JwtAuthenticationFilter;
+import emazon.microservice.user_microservice.infrastructure.configuration.auth.filter.JwtValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -19,16 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtService jwtService) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                .addFilter(new JwtValidationFilter(authenticationManager))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager, jwtService))
+                .addFilter(new JwtValidationFilter(authenticationManager, jwtService))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();

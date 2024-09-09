@@ -50,10 +50,10 @@ import static org.mockito.Mockito.*;
         user.setPassword("password");
 
         Role defaultRole = new Role();
-        defaultRole.setName("CUSTOMER");
+        defaultRole.setName("ROLE_CUSTOMER");
 
         when(userPersistencePort.findByIdentityDocument(user.getIdentityDocument())).thenReturn(null);
-        when(rolePersistencePort.findByName("CUSTOMER")).thenReturn(defaultRole);
+        when(rolePersistencePort.findByName("ROLE_CUSTOMER")).thenReturn(defaultRole);
 
         userUseCase.createUser(user);
 

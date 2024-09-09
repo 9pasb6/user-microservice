@@ -7,33 +7,25 @@ import emazon.microservice.user_microservice.aplication.dto.response.UserRespons
 import emazon.microservice.user_microservice.aplication.handler.IUserHandler;
 import emazon.microservice.user_microservice.aplication.mapper.request.UserRequestMapper;
 import emazon.microservice.user_microservice.aplication.mapper.response.UserResponseMapper;
+import emazon.microservice.user_microservice.aplication.util.Constants;
+import emazon.microservice.user_microservice.aplication.util.security.JwtService;
 import emazon.microservice.user_microservice.domain.api.IUserServicePort;
 import emazon.microservice.user_microservice.domain.model.Role;
 import emazon.microservice.user_microservice.domain.model.User;
-import emazon.microservice.user_microservice.domain.util.Constants;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.crypto.SecretKey;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static emazon.microservice.user_microservice.aplication.security.TokenJwtConfig.SECRET_KEY;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +36,7 @@ public class UserHandler implements IUserHandler {
     private final UserRequestMapper userRequestMapper;
     private final UserResponseMapper userResponseMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public void createUser(@Valid UserRequest userRequest) {
@@ -96,11 +89,8 @@ public class UserHandler implements IUserHandler {
 
     @Override
     public UserLoginResponse login(UserLoginRequest userLoginRequest) {
-        User user = userServicePort.login(userLoginRequest.getEmail());
 
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Constants.USER_NOT_FOUND);
-        }
+        User user = userServicePort.login(userLoginRequest.getEmail());
 
         boolean passwordMatch = passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword());
 
@@ -112,13 +102,7 @@ public class UserHandler implements IUserHandler {
                 .map(Role::getName)
                 .collect(Collectors.toList());
 
-        String token = Jwts.builder()
-                .setSubject(user.getEmail())
-                .claim(Constants.ROLES, roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
-                .compact();
+        String token = jwtService.generateToken(user.getEmail(), roles);
 
         return new UserLoginResponse(token, user.getName(), roles);
     }

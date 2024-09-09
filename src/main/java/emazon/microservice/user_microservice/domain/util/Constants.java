@@ -18,12 +18,9 @@ public class Constants {
     public static final String USER_ALREADY_HAS_ROLE = "The user already has the role: ";
     public static final String ROLE_NOT_ASSIGNED = "The user does not have the role: ";
     public static final String IDENTITY_DOCUMENT_ALREADY_EXISTS = "A user with this identity document already exists.";
+    public static final String EMAIL_ALREADY_EXISTS = "A user with this email already exists.";
     public static final String ROLES_NOT_FOUND_FOR_IDS = "Role not found for ID: ";
     public static final String SOME_ROLES_NOT_FOUND_FOR_IDS = "Some Roles not found for IDs: ";
-    public static final String PASSWORD_INCORRECT = "Password is incorrect. : ";
     public static final String DEFAULT_ROLE = "ROLE_CUSTOMER";
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
-    public static final String ACCOUNT_LOCKED = "Account is locked due to multiple failed login attempts.";
-    public static final int MAX_FAILED_ATTEMPTS = 5;
     public static final String ROLES = "roles";
 }

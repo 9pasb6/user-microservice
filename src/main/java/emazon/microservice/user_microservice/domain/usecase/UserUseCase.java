@@ -31,6 +31,13 @@ public class UserUseCase implements IUserServicePort {
             throw new UserExceptions.UserAlreadyExistsException(Constants.IDENTITY_DOCUMENT_ALREADY_EXISTS);
         }
 
+
+        if (userPersistencePort.findByEmail(user.getEmail()) != null) {
+            throw new UserExceptions.UserAlreadyExistsException(Constants.EMAIL_ALREADY_EXISTS);
+        }
+
+
+
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             Role defaultRole = rolePersistencePort.findByName(Constants.DEFAULT_ROLE);
             if (defaultRole == null) {
