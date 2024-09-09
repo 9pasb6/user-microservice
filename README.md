@@ -87,6 +87,11 @@ Este microservicio utiliza **JWT** para la autenticación y autorización. El pr
 8. **Expiración y Seguridad del Token**
    - El token tiene una expiración definida, tras la cual el usuario deberá autenticarse nuevamente.
 
+###Ejemplo
+
+![image](https://github.com/user-attachments/assets/b3ef6ce9-5671-4e34-a4f6-e158ad321496)
+
+
 ## Testing
 
 Las pruebas unitarias están implementadas utilizando **Mockito** para simular dependencias y asegurar la integridad de la lógica de negocio en la capa de dominio.
